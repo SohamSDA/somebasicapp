@@ -52,7 +52,7 @@ export async function POST(request: Request) {
         email,
         password: hashedPassword,
         verifyCode,
-        verifyCodeExpiry: expiryDate,
+        verifyCodeExpires: expiryDate,
         isVerified: false,
         isAcceptingMessages: true,
         messages: [],
@@ -76,7 +76,9 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
-
+    console.log("Received POST data:", { email, username, password });
+    console.log("User registration successful:", { email, username });
+    console.log("Verification code sent to email:", email);
     return Response.json(
       {
         success: true,
