@@ -1,17 +1,15 @@
-import dbConnect from "@/lib/dbconnect";
-import UserModel from "@/model/User";
-import { notFound } from "next/navigation";
-import PublicFeedbackForm from "./feedbackform";
+import dbConnect from '@/lib/dbconnect';
+import UserModel from '@/model/User';
+import { notFound } from 'next/navigation';
+import PublicFeedbackForm from './feedbackform';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-interface PageProps {
-  params: {
-    username: string;
-  };
-}
-
-export default async function PublicFeedbackPage({ params }: PageProps) {
+export default async function PublicFeedbackPage({
+  params,
+}: {
+  params: { username: string };
+}) {
   const username = decodeURIComponent(params.username);
 
   await dbConnect();
