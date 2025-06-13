@@ -80,4 +80,9 @@ const UserModel =
   mongoose.model<User>("User", UserSchema);
 
   export default UserModel;
+
+  const MessageModel =
+  (mongoose.models.Message as mongoose.Model<Message>) || mongoose.model<Message>("Message", MessageSchema);
+  
+export { MessageModel };
   

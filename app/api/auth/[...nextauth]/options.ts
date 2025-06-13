@@ -10,18 +10,27 @@ export const authOptions: NextAuthOptions = {
       id: "credentials",
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        identifier: { label: 'Email or Username', type: 'text' },
+        password: { label: 'Password', type: 'password' },
       },
+      
+      
       async authorize(credentials: any): Promise<any> {
         await dbConnect();
         try {
+          console.log("Credentials received:", credentials);
+          console.log("Trimmed identifier:", credentials.identifier.trim());
+
           const user = await UserModel.findOne({
             $or: [
-              { email: credentials.identifier },
-              { username: credentials.identifier },
+              { email: credentials.identifier.trim() },
+              { username: credentials.identifier.trim() },
             ],
           });
+
+          console.log("Querying with:", { $or: [{ email: credentials.identifier.trim() }, { username: credentials.identifier.trim() }] });
+          console.log("Found user:", user);
+
           if (!user) {
             throw new Error("No user found with this email");
           }

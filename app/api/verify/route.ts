@@ -1,59 +1,56 @@
-import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbconnect';
 import UserModel from '@/model/User';
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
+  // Connect to the database
   await dbConnect();
-  const { email, verifyCode } = await req.json();
-
-  if (!email || !verifyCode) {
-    return NextResponse.json(
-      { success: false, message: 'Email and code are required' },
-      { status: 400 }
-    );
-  }
 
   try {
-    const user = await UserModel.findOne({ email });
+    const { username, code } = await request.json();
+    const decodedUsername = decodeURIComponent(username);
+    const user = await UserModel.findOne({ username: decodedUsername });
 
     if (!user) {
-      return NextResponse.json(
+      return Response.json(
         { success: false, message: 'User not found' },
         { status: 404 }
       );
     }
 
-    if (user.isVerified) {
-      return NextResponse.json(
-        { success: false, message: 'User is already verified' },
+    // Check if the code is correct and not expired
+    const isCodeValid = user.verifyCode === code;
+    const isCodeNotExpired = new Date(user.verifyCodeExpires) > new Date();
+
+    if (isCodeValid && isCodeNotExpired) {
+      // Update the user's verification status
+      user.isVerified = true;
+      await user.save();
+
+      return Response.json(
+        { success: true, message: 'Account verified successfully' },
+        { status: 200 }
+      );
+    } else if (!isCodeNotExpired) {
+      // Code has expired
+      return Response.json(
+        {
+          success: false,
+          message:
+            'Verification code has expired. Please sign up again to get a new code.',
+        },
+        { status: 400 }
+      );
+    } else {
+      // Code is incorrect
+      return Response.json(
+        { success: false, message: 'Incorrect verification code' },
         { status: 400 }
       );
     }
-
-    const isCodeValid =
-      user.verifyCode === verifyCode &&
-      user.verifyCodeExpires > new Date();
-
-    if (!isCodeValid) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid or expired verification code' },
-        { status: 400 }
-      );
-    }
-
-    user.isVerified = true;
-    user.verifyCode = undefined;
-    user.verifyCodeExpires = undefined;
-    await user.save();
-
-    return NextResponse.json({
-      success: true,
-      message: 'Account verified successfully',
-    });
-  } catch (err) {
-    console.error('Verification error:', err);
-    return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+  } catch (error) {
+    console.error('Error verifying user:', error);
+    return Response.json(
+      { success: false, message: 'Error verifying user' },
       { status: 500 }
     );
   }
