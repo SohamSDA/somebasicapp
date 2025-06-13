@@ -1,14 +1,15 @@
-import dbConnect from '@/lib/dbconnect';
-import UserModel from '@/model/User';
-import { notFound } from 'next/navigation';
-import dynamic from 'next/dynamic';
+import dbConnect from "@/lib/dbconnect";
+import UserModel from "@/model/User";
+import { notFound } from "next/navigation";
+import PublicFeedbackForm from "./feedbackform";
 
-export const dynamicSetting = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-// Lazy load your client component to avoid bundling issues
-const PublicFeedbackForm = dynamic(() => import('./feedbackform'), { ssr: false });
-
-export default async function PublicFeedbackPage({ params }: any) {
+export default async function PublicFeedbackPage({
+  params,
+}: {
+  params: { username: string };
+}) {
   const username = decodeURIComponent(params.username);
 
   await dbConnect();
