@@ -3,14 +3,12 @@ import dbConnect from '@/lib/dbconnect';
 import UserModel from '@/model/User';
 import { MessageModel } from '@/model/User';
 
-// ✅ Utility to decode params safely
-function getUsernameFromParams(params: { username: string }): string {
-  return decodeURIComponent(params.username);
-}
-
-export async function POST(req: Request, context: { params: { username: string } }) {
+export async function POST(
+  req: Request,
+  context: { params: Record<string, string> }
+) {
   const { params } = context;
-  const username = getUsernameFromParams(params); // 🔒 Safe and clean
+  const username = decodeURIComponent(params.username);
 
   const body = await req.json();
   const content = body.content?.toString().trim();
