@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+/* ---------- Message Schema ---------- */
 export interface Message extends Document {
   content: string;
   createdAt: Date;
@@ -22,6 +23,7 @@ const MessageSchema = new Schema<Message>({
   },
 });
 
+/* ---------- User Schema ---------- */
 export interface User extends Document {
   username: string;
   password: string;
@@ -79,10 +81,9 @@ const UserModel =
   (mongoose.models.User as mongoose.Model<User>) ||
   mongoose.model<User>("User", UserSchema);
 
-  export default UserModel;
+const MessageModel =
+  (mongoose.models.Message as mongoose.Model<Message>) ||
+  mongoose.model<Message>("Message", MessageSchema);
 
-  const MessageModel =
-  (mongoose.models.Message as mongoose.Model<Message>) || mongoose.model<Message>("Message", MessageSchema);
-  
+export default UserModel;
 export { MessageModel };
-  

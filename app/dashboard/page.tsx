@@ -61,7 +61,8 @@ export default async function DashboardPage() {
             </p>
           ) : (
             <ul className="space-y-4">
-              {messages.map((msg: any, idx: number) => (
+              {messages.map((msg: { content: string; createdAt: Date }, idx: number) => (
+
                 <li
                   key={idx}
                   className="border border-gray-100 rounded-lg bg-gray-50 p-4 shadow-sm"
