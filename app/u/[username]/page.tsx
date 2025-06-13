@@ -5,8 +5,17 @@ import PublicFeedbackForm from './feedbackform';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PublicFeedbackPage({ params }: { params: { username: string } }) {
-  const username = decodeURIComponent(params.username); // 🛡️ Ensure encoded usernames work
+function getUsernameFromParams(params: { username: string }): string {
+  return decodeURIComponent(params.username);
+}
+
+
+export default async function PublicFeedbackPage(props: { params: { username: string } }) {
+  const { params } = props;
+  const usernameRaw = params.username;
+  const username = getUsernameFromParams(params);
+
+
   await dbConnect();
 
   const user = await UserModel.findOne({ username }).lean(); // 🧠 Use .lean() for better perf if no Mongoose methods are needed
