@@ -5,13 +5,11 @@ import PublicFeedbackForm from './feedbackform';
 
 export const dynamic = 'force-dynamic';
 
-interface PublicFeedbackPageProps {
-  params: {
-    username: string;
-  };
+interface PageProps {
+  params: { username: string };
 }
 
-export default async function PublicFeedbackPage({ params }: PublicFeedbackPageProps) {
+export default async function PublicFeedbackPage({ params }: PageProps) {
   const username = decodeURIComponent(params.username);
 
   await dbConnect();
