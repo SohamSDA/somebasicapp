@@ -5,10 +5,6 @@ import PublicFeedbackForm from "./feedbackform";
 
 export const dynamic = "force-dynamic";
 
-function getUsernameFromParams(params: { username: string }): string {
-  return decodeURIComponent(params.username);
-}
-
 interface PageProps {
   params: {
     username: string;
