@@ -26,7 +26,7 @@ export async function POST(req: Request, context: Promise<{ params: { username: 
     user: user._id,
   });
 
-  user.message.push(message._id as any);
+  (user.message as unknown as Array<typeof message._id>).push(message._id);
   await user.save();
 
   return NextResponse.json({ success: true });
