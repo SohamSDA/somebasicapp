@@ -1,24 +1,26 @@
-import dbConnect from '@/lib/dbconnect';
-import UserModel from '@/model/User';
-import { notFound } from 'next/navigation';
-import PublicFeedbackForm from './feedbackform';
+import dbConnect from "@/lib/dbconnect";
+import UserModel from "@/model/User";
+import { notFound } from "next/navigation";
+import PublicFeedbackForm from "./feedbackform";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 function getUsernameFromParams(params: { username: string }): string {
   return decodeURIComponent(params.username);
 }
 
+interface PageProps {
+  params: {
+    username: string;
+  };
+}
 
-export default async function PublicFeedbackPage(props: { params: { username: string } }) {
-  const { params } = props;
-  
-  const username = getUsernameFromParams(params);
-
+export default async function PublicFeedbackPage({ params }: PageProps) {
+  const username = decodeURIComponent(params.username);
 
   await dbConnect();
 
-  const user = await UserModel.findOne({ username }).lean(); // 🧠 Use .lean() for better perf if no Mongoose methods are needed
+  const user = await UserModel.findOne({ username }).lean();
   if (!user || !user.isVerified) notFound();
 
   return (
@@ -27,7 +29,9 @@ export default async function PublicFeedbackPage(props: { params: { username: st
         {user.isAcceptingMessages ? (
           <PublicFeedbackForm username={username} />
         ) : (
-          <p className="text-center text-red-600">This user is not accepting messages.</p>
+          <p className="text-center text-red-600">
+            This user is not accepting messages.
+          </p>
         )}
       </div>
     </main>
