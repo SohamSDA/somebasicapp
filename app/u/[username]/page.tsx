@@ -12,7 +12,7 @@ function getUsernameFromParams(params: { username: string }): string {
 
 export default async function PublicFeedbackPage(props: { params: { username: string } }) {
   const { params } = props;
-  const usernameRaw = params.username;
+  
   const username = getUsernameFromParams(params);
 
 
