@@ -106,7 +106,7 @@ export async function DELETE(request: Request) {
     await MessageModel.findByIdAndDelete(messageId);
 
     // Remove the message ID from user.messages array
-    user.message = (user.message as any[]).filter(
+    user.message = (user.message).filter(
       (id) => String(id) !== messageId
     );
     await user.save();
