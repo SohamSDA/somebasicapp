@@ -1,3 +1,5 @@
+// model/User.ts
+
 import mongoose, { Document, Schema } from "mongoose";
 
 /* ---------- Message Schema ---------- */
@@ -8,19 +10,9 @@ export interface Message extends Document {
 }
 
 const MessageSchema = new Schema<Message>({
-  content: {
-    type: String,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
+  content: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
 
 /* ---------- User Schema ---------- */
@@ -36,54 +28,26 @@ export interface User extends Document {
 }
 
 const UserSchema = new Schema<User>({
-  username: {
-    type: String,
-    required: [true, "Username is required"],
-    unique: true,
-    trim: true,
-  },
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-    minlength: [6, "Password must be at least 6 characters long"],
-  },
+  username: { type: String, required: true, unique: true, trim: true },
+  password: { type: String, required: true, minlength: 6 },
   email: {
     type: String,
-    required: [true, "Email is required"],
+    required: true,
     unique: true,
     match: [/.+\@.+\..+/, "Please enter a valid email address"],
   },
-  verifyCode: {
-    type: String,
-    required: [true, "Verification code is required"],
-  },
-  verifyCodeExpires: {
-    type: Date,
-    required: [true, "Verification code expiration date is required"],
-  },
-  isVerified: {
-    type: Boolean,
-    default: false,
-  },
-  isAcceptingMessages: {
-    type: Boolean,
-    default: true,
-  },
-  message: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Message",
-    },
-  ],
+  verifyCode: { type: String, required: true },
+  verifyCodeExpires: { type: Date, required: true },
+  isVerified: { type: Boolean, default: false },
+  isAcceptingMessages: { type: Boolean, default: true },
+  message: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
 });
 
-const UserModel =
+// ✅ Use named exports only
+export const UserModel =
   (mongoose.models.User as mongoose.Model<User>) ||
   mongoose.model<User>("User", UserSchema);
 
-const MessageModel =
+export const MessageModel =
   (mongoose.models.Message as mongoose.Model<Message>) ||
   mongoose.model<Message>("Message", MessageSchema);
-
-export default UserModel;
-export { MessageModel };
