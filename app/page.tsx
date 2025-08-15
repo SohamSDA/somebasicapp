@@ -63,7 +63,7 @@ export default function Home() {
                 function: anonymous_messaging_enabled
               </div>
               <div className="text-gray-400 mt-2">
-                // No identity traces • Complete anonymity • Honest responses
+                {/* No identity traces • Complete anonymity • Honest responses */}
               </div>
             </div>
           </div>

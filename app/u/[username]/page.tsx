@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -18,6 +17,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import * as z from "zod";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { messageSchema } from "@/schemas/messageSchema";
 import { ApiResponse } from "@/types/ApiResponse";
 
@@ -79,13 +79,13 @@ export default function SendMessage() {
         <div className="w-full max-w-2xl">
           {/* Back to Home Link */}
           <div className="mb-8">
-            <a
+            <Link
               href="/"
               className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-300 transition-colors duration-200 font-mono text-sm"
             >
               <span>&lt;</span>
               [EXIT_TO_HOME]
-            </a>
+            </Link>
           </div>
 
           {/* Anonymous Terminal Interface */}

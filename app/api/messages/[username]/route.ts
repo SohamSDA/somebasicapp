@@ -4,10 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import dbConnect from "@/lib/dbconnect";
 import { MessageModel } from "@/model/User";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { username: string } }
-) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user?._id) {

@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { AcceptingMessagesToggle } from "@/helpers/acceptingMessagesToggle";
 import CopyButton from "@/helpers/copyButton";
@@ -30,13 +30,7 @@ export default function DashboardPage() {
   }, [status, router]);
 
   // Fetch messages on component mount
-  useEffect(() => {
-    if (session?.user) {
-      fetchMessages();
-    }
-  }, [session]);
-
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       const response = await fetch(`/api/messages/${session?.user.username}`);
       const data = await response.json();
@@ -51,7 +45,13 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [session?.user.username]);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchMessages();
+    }
+  }, [session, fetchMessages]);
 
   const handleDeleteMessage = async (messageId: string) => {
     if (deletingId) return; // Prevent multiple clicks
