@@ -1,50 +1,73 @@
-import {UserModel} from "@/model/User";
+import { UserModel } from "@/model/User";
 import dbConnect from "@/lib/dbconnect";
 import { MessageModel } from "@/model/User";
+import mongoose from "mongoose";
 
 export async function POST(request: Request) {
   await dbConnect();
 
-  const { username, content } = await request.json();
-
-  if (!username || typeof username !== "string") {
-    return Response.json(
-      { message: "Username is required", success: false },
-      { status: 400 }
-    );
-  }
-
-  if (!content || content.trim().length < 2) {
-    return Response.json(
-      { message: "Message too short", success: false },
-      { status: 400 }
-    );
-  }
-
   try {
+    const { username, content } = await request.json();
+
+    console.log("Received message data:", { username, content });
+
+    if (!username || typeof username !== "string") {
+      return Response.json(
+        { message: "Username is required", success: false },
+        { status: 400 }
+      );
+    }
+
+    if (!content || content.trim().length < 2) {
+      return Response.json(
+        { message: "Message too short", success: false },
+        { status: 400 }
+      );
+    }
+
     const user = await UserModel.findOne({ username }).exec();
 
     if (!user) {
+      console.log("User not found:", username);
       return Response.json(
         { message: "User not found", success: false },
         { status: 404 }
       );
     }
 
-    if (!user.isAcceptingMessages || !user.isVerified) {
+    console.log("User found:", {
+      username: user.username,
+      isAcceptingMessages: user.isAcceptingMessages,
+      isVerified: user.isVerified,
+    });
+
+    if (!user.isAcceptingMessages) {
       return Response.json(
-        { message: "User not accepting messages", success: false },
+        { message: "User is not accepting messages", success: false },
+        { status: 403 }
+      );
+    }
+
+    if (!user.isVerified) {
+      return Response.json(
+        { message: "User is not verified", success: false },
         { status: 403 }
       );
     }
 
     const message = await MessageModel.create({
-      content,
+      content: content.trim(),
       user: user._id,
     });
 
-    (user.message as unknown as Array<typeof message._id>).push(message._id);
+    console.log("Message created:", message);
+
+    // Add the message ID to the user's message array
+    user.message.push(message._id as mongoose.Types.ObjectId);
     await user.save();
+
+    console.log("Message sent successfully");
+
     return Response.json(
       { message: "Message sent successfully", success: true },
       { status: 201 }
@@ -106,9 +129,7 @@ export async function DELETE(request: Request) {
     await MessageModel.findByIdAndDelete(messageId);
 
     // Remove the message ID from user.messages array
-    user.message = (user.message).filter(
-      (id) => String(id) !== messageId
-    );
+    user.message = user.message.filter((id) => String(id) !== messageId);
     await user.save();
 
     return Response.json(
