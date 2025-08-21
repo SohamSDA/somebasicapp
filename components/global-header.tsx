@@ -4,11 +4,11 @@ import { ModeToggle } from "@/components/toggle-dark-mode";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, Home, LayoutDashboard, LogOut } from "lucide-react";
+import { Home, LayoutDashboard, LogOut } from "lucide-react";
 import { toast } from "sonner";
 
 export function GlobalHeader() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const pathname = usePathname();
 
   const handleSignOut = async () => {
@@ -16,6 +16,7 @@ export function GlobalHeader() {
       await signOut({ callbackUrl: "/" });
       toast.success("Signed out successfully!");
     } catch (error) {
+      console.error("Sign out error:", error);
       toast.error("Error signing out");
     }
   };

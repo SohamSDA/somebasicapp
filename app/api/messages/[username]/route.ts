@@ -18,9 +18,7 @@ export async function GET() {
       user: session.user._id,
     }).sort({ createdAt: -1 });
 
-    console.log(
-      `Found ${messages.length} messages for user ${session.user.username}`
-    );
+   
 
     return NextResponse.json({ success: true, messages });
   } catch (error) {

@@ -33,6 +33,7 @@ export default function VerifyPage() {
         toast.error(data.message || "Verification failed. Please try again.");
       }
     } catch (error) {
+      console.error("Verification error:", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
@@ -117,7 +118,7 @@ export default function VerifyPage() {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Didn't receive the code?{" "}
+              Didn&apos;t receive the code?{" "}
               <button
                 type="button"
                 className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors cursor-pointer"

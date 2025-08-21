@@ -22,12 +22,10 @@ import { messageSchema } from "@/schemas/messageSchema";
 import { ApiResponse } from "@/types/ApiResponse";
 import { toast } from "sonner";
 import {
-  ArrowLeft,
   Send,
   MessageSquare,
   Shield,
   Users,
-  CheckCircle,
 } from "lucide-react";
 
 export default function SendMessage() {
@@ -35,7 +33,6 @@ export default function SendMessage() {
   const username = decodeURIComponent(params.username); // Decode URL params to handle case issues
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
@@ -112,7 +109,7 @@ export default function SendMessage() {
                 </h3>
               </div>
               <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                Your message will be completely anonymous. We don't store your
+                Your message will be completely anonymous. We don&apos;t store your
                 IP address, browser fingerprint, or any identifying information.
                 The recipient will only see your message content.
               </p>
