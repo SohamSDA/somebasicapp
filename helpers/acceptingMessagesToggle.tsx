@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useSession } from "next-auth/react";
+import { Power, PowerOff } from "lucide-react";
 
 export function AcceptingMessagesToggle({ initial }: { initial: boolean }) {
   const [accepting, setAccepting] = useState(initial);
@@ -46,42 +47,50 @@ export function AcceptingMessagesToggle({ initial }: { initial: boolean }) {
   };
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between p-6 bg-white border border-slate-200 rounded-xl">
       <div>
-        <h3 className="text-base font-mono text-gray-300 mb-2 tracking-wider">
-          SYSTEM.STATUS_CONTROL
+        <h3 className="text-lg font-semibold text-slate-900 mb-2">
+          Message Reception
         </h3>
-        <div className="flex items-center gap-2 font-mono text-sm">
-          <span className="text-gray-400">MODE:</span>
-          <span
-            className={`font-medium ${accepting ? "text-green-400" : "text-red-400"}`}
-          >
-            [{accepting ? "RECEIVING" : "OFFLINE"}]
+        <div className="flex items-center gap-3 mb-3">
+          <div
+            className={`w-3 h-3 rounded-full ${accepting ? "bg-green-500" : "bg-red-500"}`}
+          ></div>
+          <span className="font-medium text-slate-700">
+            {accepting ? "Currently Accepting Messages" : "Messages Paused"}
           </span>
         </div>
-        <p className="text-gray-500 text-xs font-mono mt-1">
-          Anonymous transmission {accepting ? "allowed" : "blocked"}
+        <p className="text-slate-600 text-sm">
+          {accepting
+            ? "Others can send you anonymous feedback"
+            : "Anonymous feedback is temporarily disabled"}
         </p>
       </div>
 
       <button
         onClick={toggle}
         disabled={isPending}
-        className={`px-4 py-2 font-mono text-xs border transition-all duration-200 ${
+        className={`px-6 py-3 font-medium text-sm rounded-lg transition-all duration-200 cursor-pointer flex items-center gap-2 ${
           accepting
-            ? "bg-red-900 border-red-700 text-red-300 hover:bg-red-800"
-            : "bg-green-900 border-green-700 text-green-300 hover:bg-green-800"
+            ? "bg-red-100 hover:bg-red-200 text-red-700 border border-red-200"
+            : "bg-green-100 hover:bg-green-200 text-green-700 border border-green-200"
         } ${isPending ? "opacity-50 cursor-not-allowed" : ""}`}
       >
         {isPending ? (
           <span className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-current rounded-full animate-pulse"></div>
-            UPDATING...
+            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+            Updating...
           </span>
         ) : accepting ? (
-          "[DISABLE]"
+          <>
+            <PowerOff className="w-4 h-4" />
+            Pause Messages
+          </>
         ) : (
-          "[ENABLE]"
+          <>
+            <Power className="w-4 h-4" />
+            Enable Messages
+          </>
         )}
       </button>
     </div>

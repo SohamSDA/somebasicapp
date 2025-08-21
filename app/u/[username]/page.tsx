@@ -20,12 +20,22 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { messageSchema } from "@/schemas/messageSchema";
 import { ApiResponse } from "@/types/ApiResponse";
+import {
+  ArrowLeft,
+  Send,
+  MessageSquare,
+  Shield,
+  Users,
+  CheckCircle,
+} from "lucide-react";
 
 export default function SendMessage() {
   const params = useParams<{ username: string }>();
   const username = params.username;
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
     defaultValues: { content: "" },
@@ -44,9 +54,10 @@ export default function SendMessage() {
 
       console.log("Message sent successfully:", response.data);
       form.reset({ content: "" });
+      setIsSuccess(true);
 
-      // You can add a toast notification here if you want
-      alert("Message sent successfully!");
+      // Reset success state after 3 seconds
+      setTimeout(() => setIsSuccess(false), 3000);
     } catch (err) {
       const errorMessage =
         (err as AxiosError<ApiResponse>).response?.data.message ||
@@ -60,74 +71,87 @@ export default function SendMessage() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/20 via-black to-gray-900/10"></div>
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 30% 70%, #333 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        ></div>
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
+          </div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+            Message Sent Successfully!
+          </h1>
+          <p className="text-slate-600 dark:text-slate-300 mb-8">
+            Your anonymous feedback has been delivered to{" "}
+            <span className="font-semibold">@{username}</span>
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors duration-200 cursor-pointer"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Home
+          </Link>
+        </div>
       </div>
+    );
+  }
 
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-6 py-12">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      {/* Background Elements */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-r from-blue-500/10 to-purple-600/10 rounded-full blur-3xl"></div>
+
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-2xl">
           {/* Back to Home Link */}
           <div className="mb-8">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-300 transition-colors duration-200 font-mono text-sm"
+              className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200 cursor-pointer"
             >
-              <span>&lt;</span>
-              [EXIT_TO_HOME]
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
             </Link>
           </div>
 
-          {/* Anonymous Terminal Interface */}
-          <div className="bg-gray-900 border border-gray-700">
-            {/* Terminal Header */}
-            <div className="bg-gray-800 border-b border-gray-700 p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-1">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  </div>
-                  <span className="text-gray-400 font-mono text-sm">
-                    ANONYMOUS_MESSAGING_TERMINAL
-                  </span>
+          {/* Main Card */}
+          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-6 text-white">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                  <MessageSquare className="w-8 h-8" />
                 </div>
-                <div className="text-gray-500 font-mono text-xs">
-                  TARGET: {username?.toUpperCase()}
+                <div>
+                  <h1 className="text-2xl font-bold mb-1">
+                    Send Anonymous Feedback
+                  </h1>
+                  <p className="text-blue-100">
+                    to <span className="font-semibold">@{username}</span>
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Terminal Content */}
-            <div className="p-6 font-mono">
-              {/* Target Info */}
-              <div className="mb-6 bg-gray-800 border border-gray-600 p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-yellow-400">&gt;</span>
-                  <span className="text-gray-300">
-                    TRANSMISSION_TARGET_IDENTIFIED
-                  </span>
-                </div>
-                <div className="text-green-400 text-lg">
-                  USER_ID: ANON_{username?.toUpperCase()}
-                </div>
-                <div className="text-gray-500 text-xs mt-1">
-                  [!] Your identity will remain completely anonymous
-                </div>
+            {/* Privacy Notice */}
+            <div className="px-8 py-6 bg-blue-50 dark:bg-blue-900/20 border-b border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3 mb-3">
+                <Shield className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                <h3 className="font-semibold text-slate-900 dark:text-white">
+                  Your Privacy is Protected
+                </h3>
               </div>
+              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                Your message will be completely anonymous. We don't store your
+                IP address, browser fingerprint, or any identifying information.
+                The recipient will only see your message content.
+              </p>
+            </div>
 
-              {/* Message Form */}
+            {/* Message Form */}
+            <div className="p-8">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
@@ -138,85 +162,100 @@ export default function SendMessage() {
                     name="content"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-300 font-mono text-sm block mb-3">
-                          &gt; COMPOSE_ANONYMOUS_MESSAGE():
+                        <FormLabel className="text-lg font-semibold text-slate-900 dark:text-white">
+                          Your Anonymous Message
                         </FormLabel>
                         <FormControl>
-                          <div className="bg-black border border-gray-600 p-1">
-                            <div className="bg-gray-900 border border-gray-700 p-2 text-xs text-gray-500 font-mono">
-                              SECURE_INPUT_BUFFER [ENCRYPTED]
-                            </div>
-                            <Textarea
-                              placeholder="// Enter your anonymous message here
-// Be honest, constructive, and respectful
-// Your identity is completely protected"
-                              className="resize-none h-40 bg-black border-0 text-green-400 placeholder-gray-600 focus:ring-0 focus:outline-none font-mono text-sm p-4"
-                              {...field}
-                            />
-                          </div>
+                          <Textarea
+                            placeholder="Share your honest feedback, thoughts, or suggestions. Be constructive and respectful in your message..."
+                            className="min-h-[200px] resize-none bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            {...field}
+                          />
                         </FormControl>
-                        <FormMessage className="text-red-400 font-mono text-xs" />
+                        <div className="flex items-center justify-between">
+                          <FormMessage className="text-red-500" />
+                          <span className="text-sm text-slate-500 dark:text-slate-400">
+                            {content.length}/500 characters
+                          </span>
+                        </div>
                       </FormItem>
                     )}
                   />
 
-                  {/* Status Bar */}
-                  <div className="bg-gray-800 border border-gray-600 p-3">
-                    <div className="flex items-center justify-between text-xs font-mono">
-                      <div className="flex items-center gap-4 text-gray-400">
-                        <span>BUFFER_SIZE: {content.length}/500</span>
-                        <span>ENCRYPTION: AES-256</span>
-                        <span>
-                          STATUS: {content.trim() ? "READY" : "WAITING"}
-                        </span>
-                      </div>
-                      <Button
-                        type="submit"
-                        disabled={isLoading || !content.trim()}
-                        className="px-4 py-2 bg-green-900 border border-green-700 text-green-300 hover:bg-green-800 hover:border-green-600 disabled:opacity-50 disabled:cursor-not-allowed font-mono text-xs"
-                      >
-                        {isLoading ? (
-                          <span className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-current rounded-full animate-pulse"></div>
-                            TRANSMITTING...
-                          </span>
-                        ) : (
-                          "[SEND_ANONYMOUS]"
-                        )}
-                      </Button>
-                    </div>
-                  </div>
+                  <Button
+                    type="submit"
+                    disabled={isLoading || !content.trim()}
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-4 rounded-xl transition-all duration-200 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 text-lg"
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Sending Message...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        Send Anonymous Message
+                      </>
+                    )}
+                  </Button>
                 </form>
               </Form>
             </div>
           </div>
 
-          <Separator className="my-8 bg-gray-800" />
+          {/* Features */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-center">
+              <Shield className="w-8 h-8 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
+              <h4 className="font-semibold text-slate-900 dark:text-white mb-1">
+                100% Anonymous
+              </h4>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                No tracking or logging
+              </p>
+            </div>
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-center">
+              <MessageSquare className="w-8 h-8 text-green-600 dark:text-green-400 mx-auto mb-2" />
+              <h4 className="font-semibold text-slate-900 dark:text-white mb-1">
+                Instant Delivery
+              </h4>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                Message sent immediately
+              </p>
+            </div>
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-center">
+              <Users className="w-8 h-8 text-purple-600 dark:text-purple-400 mx-auto mb-2" />
+              <h4 className="font-semibold text-slate-900 dark:text-white mb-1">
+                Honest Feedback
+              </h4>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                Encourage open communication
+              </p>
+            </div>
+          </div>
 
-          {/* System Advertisement */}
-          <div className="bg-gray-900 border border-gray-700 p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-gray-800 border border-gray-600 flex items-center justify-center flex-shrink-0">
-                <div className="w-6 h-6 bg-gray-600 transform rotate-45"></div>
-              </div>
-              <div>
-                <h3 className="text-lg font-mono text-gray-200 mb-2">
-                  DEPLOY_YOUR_OWN_SYSTEM
-                </h3>
-                <p className="text-gray-400 font-mono text-sm mb-4 leading-relaxed">
-                  &gt; Initialize personal anonymous feedback endpoint
-                  <br />
-                  &gt; Enable secure message collection protocol
-                  <br />
-                  &gt; Access advanced anonymity features
-                </p>
-                <Button
-                  asChild
-                  className="bg-gray-800 border border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white font-mono text-sm px-4 py-2"
-                >
-                  <a href="/sign-up">[INIT_PERSONAL_SYSTEM]</a>
-                </Button>
-              </div>
+          <Separator className="my-8 bg-slate-200 dark:bg-slate-700" />
+
+          {/* CTA Section */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-8">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                Want your own feedback link?
+              </h3>
+              <p className="text-slate-600 dark:text-slate-300 mb-6">
+                Create your personalized anonymous feedback link and start
+                receiving honest input from others.
+              </p>
+              <Button
+                asChild
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl cursor-pointer"
+              >
+                <Link href="/sign-up" className="flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Create Your Link
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

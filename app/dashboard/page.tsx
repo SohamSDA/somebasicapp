@@ -6,6 +6,16 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { AcceptingMessagesToggle } from "@/helpers/acceptingMessagesToggle";
 import CopyButton from "@/helpers/copyButton";
+import { GlobalHeader } from "@/components/global-header";
+import {
+  ArrowLeft,
+  MessageSquare,
+  Settings,
+  Trash2,
+  Users,
+  Shield,
+  Link as LinkIcon,
+} from "lucide-react";
 
 interface Message {
   _id: string;
@@ -91,18 +101,17 @@ export default function DashboardPage() {
   // Show loading state while checking authentication
   if (status === "loading" || loading) {
     return (
-      <main className="min-h-screen bg-black flex items-center justify-center">
+      <main className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 text-gray-600">
-            <div className="animate-pulse">
-              <div className="flex justify-center gap-1 mb-2">
-                <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
-                <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
-              </div>
-              <div className="w-8 h-1 bg-gray-600 mx-auto"></div>
-            </div>
+          <div className="w-16 h-16 mx-auto mb-6">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 dark:border-blue-400"></div>
           </div>
-          <p className="text-gray-500 font-mono text-sm">[LOADING SYSTEM...]</p>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
+            Loading Dashboard
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400">
+            Please wait while we set up your workspace...
+          </p>
         </div>
       </main>
     );
@@ -117,222 +126,202 @@ export default function DashboardPage() {
   const feedbackLink = `${baseUrl}/u/${username}`;
 
   return (
-    <main className="min-h-screen bg-black">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-black">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 via-black to-gray-900/30"></div>
-        <div
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 50% 50%, #333 1px, transparent 1px)",
-            backgroundSize: "30px 30px",
-          }}
-        ></div>
-      </div>
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 pt-20">
+      <GlobalHeader />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
-        {/* Anonymous Header */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Welcome Section */}
         <div className="mb-12">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              {/* Anonymous Avatar */}
-              <div className="w-16 h-16 bg-gray-800 rounded-full border-2 border-gray-600 flex items-center justify-center">
-                <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                  <div className="flex gap-1">
-                    <div className="w-1.5 h-1.5 bg-black rounded-full"></div>
-                    <div className="w-1.5 h-1.5 bg-black rounded-full"></div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h1 className="text-3xl font-mono text-gray-100 tracking-wider">
-                  ANON_{username?.toUpperCase()}
-                </h1>
-                <p className="text-gray-500 font-mono text-sm mt-1">
-                  &gt; ANONYMOUS FEEDBACK TERMINAL
-                </p>
-              </div>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+              {username?.charAt(0).toUpperCase()}
             </div>
-
-            <Link
-              href="/"
-              className="px-4 py-2 bg-gray-800 border border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 font-mono text-sm"
-            >
-              [EXIT]
-            </Link>
-          </div>
-
-          {/* Status Bar */}
-          <div className="bg-gray-900 border border-gray-700 p-6 font-mono">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <span className="text-green-400">●</span>
-                <span className="text-gray-300 text-sm">
-                  SYSTEM STATUS: ONLINE
-                </span>
-              </div>
-              <div className="flex items-center gap-6 text-sm">
-                <span className="text-gray-400">
-                  MESSAGES: {messages.length}
-                </span>
-                <span className="text-gray-400">
-                  MODE:{" "}
-                  {session.user.isAcceptingMessages ? "RECEIVING" : "PAUSED"}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-4 border-t border-gray-700 pt-4">
-              <AcceptingMessagesToggle
-                initial={session.user.isAcceptingMessages}
-              />
+            <div>
+              <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                Welcome back, {username}
+              </h1>
+              <p className="text-lg text-slate-600 dark:text-slate-400">
+                Manage your anonymous feedback and messages
+              </p>
             </div>
           </div>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-900 border border-gray-700 p-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-xs font-mono tracking-wider">
-                TOTAL_MSG
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 hover:shadow-md transition-shadow duration-200 cursor-pointer">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-xl">
+                <MessageSquare className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                {messages.length}
               </span>
-              <span className="text-gray-600">■</span>
             </div>
-            <div className="text-2xl font-mono text-green-400">
-              {String(messages.length).padStart(3, "0")}
-            </div>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">
+              Total Messages
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Received feedback</p>
           </div>
 
-          <div className="bg-gray-900 border border-gray-700 p-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-xs font-mono tracking-wider">
-                STATUS
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 hover:shadow-md transition-shadow duration-200 cursor-pointer">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-green-100 dark:bg-green-900/50 rounded-xl">
+                <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
+              </div>
+              <span
+                className={`text-2xl font-bold ${session.user.isAcceptingMessages ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}
+              >
+                {session.user.isAcceptingMessages ? "Active" : "Paused"}
               </span>
-              <span className="text-gray-600">◆</span>
             </div>
-            <div className="text-sm font-mono text-yellow-400">
-              {session.user.isAcceptingMessages ? "ACTIVE" : "DORMANT"}
-            </div>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">Status</h3>
+            <p className="text-sm text-white-600 dark:text-slate-400">Message reception</p>
           </div>
 
-          <div className="bg-gray-900 border border-gray-700 p-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-xs font-mono tracking-wider">
-                IDENTITY
-              </span>
-              <span className="text-gray-600">▲</span>
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 hover:shadow-md transition-shadow duration-200 cursor-pointer">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-xl">
+                <Shield className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              </div>
+              <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">100%</span>
             </div>
-            <div className="text-sm font-mono text-red-400">HIDDEN</div>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">Privacy</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Anonymous feedback</p>
           </div>
 
-          <div className="bg-gray-900 border border-gray-700 p-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-xs font-mono tracking-wider">
-                SECURE
-              </span>
-              <span className="text-gray-600">●</span>
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 hover:shadow-md transition-shadow duration-200 cursor-pointer">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-orange-100 dark:bg-orange-900/50 rounded-xl">
+                <LinkIcon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              </div>
+              <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">Secure</span>
             </div>
-            <div className="text-sm font-mono text-blue-400">ENCRYPTED</div>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">Link Status</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Ready to share</p>
           </div>
         </div>
 
-        {/* Link Section */}
-        <section className="bg-gray-900 border border-gray-700 p-8 mb-8">
+        {/* Settings Card */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <span className="text-yellow-400 font-mono">&gt;</span>
-            <h2 className="text-xl font-mono text-gray-100">ANONYMOUS_LINK</h2>
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+              <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              Message Settings
+            </h2>
           </div>
+
+          <div className="bg-slate-50/80 dark:bg-slate-700/50 rounded-xl p-6">
+            <AcceptingMessagesToggle
+              initial={session.user.isAcceptingMessages}
+            />
+          </div>
+        </div>
+
+        {/* Share Link Section */}
+        <div className="bg-gradient-to-r from-blue-50/80 to-purple-50/80 dark:from-blue-900/30 dark:to-purple-900/30 backdrop-blur-sm rounded-2xl border border-blue-200/60 dark:border-blue-700/60 p-8 mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+              <LinkIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              Share Your Link
+            </h2>
+          </div>
+
+          <p className="text-slate-600 dark:text-slate-400 mb-6">
+            Share this link with others to receive anonymous feedback and
+            messages.
+          </p>
 
           <CopyButton text={feedbackLink} />
+        </div>
 
-          <div className="mt-4 p-4 bg-gray-800 border border-gray-600">
-            <p className="text-gray-400 text-sm font-mono">
-              [!] Share this link to collect anonymous feedback from unknown
-              sources
-            </p>
-          </div>
-        </section>
-
-        {/* Messages Terminal */}
-        <section className="bg-gray-900 border border-gray-700 p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-green-400 font-mono">&gt;</span>
-            <h2 className="text-xl font-mono text-gray-100">
-              INCOMING_TRANSMISSIONS
-            </h2>
-            {messages.length > 0 && (
-              <span className="px-2 py-1 bg-red-900 border border-red-700 text-red-300 text-xs font-mono">
-                [{messages.length}] NEW
-              </span>
-            )}
+        {/* Messages Section */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 p-8">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
+                <MessageSquare className="w-5 h-5 text-green-600 dark:text-green-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                Recent Messages
+              </h2>
+              {messages.length > 0 && (
+                <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
+                  {messages.length} message{messages.length !== 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
           </div>
 
           {messages.length === 0 ? (
-            <div className="text-center py-16 border border-gray-700 bg-gray-800">
-              <div className="mb-6">
-                <div className="w-16 h-16 mx-auto mb-4 text-gray-600">
-                  <div className="animate-pulse">
-                    <div className="flex justify-center gap-1 mb-2">
-                      <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
-                      <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
-                    </div>
-                    <div className="w-8 h-1 bg-gray-600 mx-auto"></div>
-                  </div>
-                </div>
+            <div className="text-center py-16 bg-slate-50/80 dark:bg-slate-700/50 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-600">
+              <div className="w-16 h-16 mx-auto mb-6 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center">
+                <MessageSquare className="w-8 h-8 text-slate-400" />
               </div>
-              <p className="text-gray-500 font-mono text-sm mb-2">
-                [AWAITING TRANSMISSIONS...]
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                No messages yet
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">
+                Share your link to start receiving anonymous feedback
               </p>
-              <p className="text-gray-600 font-mono text-xs">
-                No anonymous messages detected
-              </p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg font-medium">
+                <LinkIcon className="w-4 h-4" />
+                Ready to receive messages
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
               {messages.map((msg: Message, idx: number) => (
                 <div
                   key={msg._id}
-                  className="group bg-gray-800 border border-gray-600 p-6 hover:border-gray-500 transition-all duration-200"
+                  className="group bg-slate-50/80 hover:bg-slate-100/80 dark:bg-slate-700/50 dark:hover:bg-slate-600/50 border border-slate-200 dark:border-slate-600 rounded-xl p-6 transition-all duration-200"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-yellow-400 font-mono text-xs">
-                          ANON_{String(idx + 1).padStart(3, "0")}
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-8 h-8 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                          {idx + 1}
+                        </div>
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                          Anonymous Message
                         </span>
-                        <span className="text-gray-600 font-mono text-xs">
-                          |
-                        </span>
-                        <span className="text-gray-500 font-mono text-xs">
+                        <span className="text-slate-400 dark:text-slate-500">•</span>
+                        <span className="text-sm text-slate-500 dark:text-slate-400">
                           {new Date(msg.createdAt).toLocaleDateString("en-US", {
-                            year: "2-digit",
-                            month: "2-digit",
-                            day: "2-digit",
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
                         </span>
                       </div>
-                      <div className="text-gray-100 leading-relaxed whitespace-pre-line font-mono text-sm bg-black p-4 border border-gray-700">
+                      <div className="bg-white/90 dark:bg-slate-800/90 p-4 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
                         {msg.content}
                       </div>
                     </div>
                     <button
                       onClick={() => handleDeleteMessage(msg._id)}
                       disabled={deletingId === msg._id}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 bg-red-900 border border-red-700 text-red-400 hover:bg-red-800 text-xs font-mono disabled:opacity-50"
+                      className="opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/50 dark:hover:bg-red-800/50 text-red-600 dark:text-red-400 rounded-lg disabled:opacity-50 cursor-pointer flex items-center gap-1"
                     >
-                      {deletingId === msg._id ? "[DEL...]" : "[DEL]"}
+                      <Trash2 className="w-4 h-4" />
+                      {deletingId === msg._id ? (
+                        <span className="text-xs">Deleting...</span>
+                      ) : (
+                        <span className="text-xs">Delete</span>
+                      )}
                     </button>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </section>
+        </div>
       </div>
     </main>
   );
