@@ -3,6 +3,7 @@ import "./globals.css";
 import AuthProvider from "@/context/AuthProvider";
 import { ThemeProvider } from "next-themes";
 import { GlobalHeader } from "@/components/global-header";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
           >
             <GlobalHeader />
             {children}
+            <Toaster
+              richColors
+              position="top-center"
+              toastOptions={{
+                duration: 4000,
+              }}
+            />
           </ThemeProvider>
         </body>
       </AuthProvider>

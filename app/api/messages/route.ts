@@ -2,6 +2,8 @@ import { UserModel } from "@/model/User";
 import dbConnect from "@/lib/dbconnect";
 import { MessageModel } from "@/model/User";
 import mongoose from "mongoose";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 export async function POST(request: Request) {
   await dbConnect();
@@ -25,7 +27,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = await UserModel.findOne({ username }).exec();
+    const user = await UserModel.findOne({
+      username: { $regex: new RegExp(`^${username}$`, "i") },
+    }).exec();
 
     if (!user) {
       console.log("User not found:", username);
@@ -41,16 +45,16 @@ export async function POST(request: Request) {
       isVerified: user.isVerified,
     });
 
-    if (!user.isAcceptingMessages) {
+    if (!user.isVerified) {
       return Response.json(
-        { message: "User is not accepting messages", success: false },
+        { message: "User is not verified", success: false },
         { status: 403 }
       );
     }
 
-    if (!user.isVerified) {
+    if (!user.isAcceptingMessages) {
       return Response.json(
-        { message: "User is not verified", success: false },
+        { message: "User is not accepting messages", success: false },
         { status: 403 }
       );
     }
@@ -84,14 +88,7 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   await dbConnect();
 
-  const { username, messageId } = await request.json();
-
-  if (!username || typeof username !== "string") {
-    return Response.json(
-      { message: "Username is required", success: false },
-      { status: 400 }
-    );
-  }
+  const { messageId } = await request.json();
 
   if (!messageId || typeof messageId !== "string") {
     return Response.json(
@@ -101,7 +98,16 @@ export async function DELETE(request: Request) {
   }
 
   try {
-    const user = await UserModel.findOne({ username }).exec();
+    // Get the session to verify the user
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?._id) {
+      return Response.json(
+        { message: "Unauthorized", success: false },
+        { status: 401 }
+      );
+    }
+
+    const user = await UserModel.findById(session.user._id).exec();
     if (!user) {
       return Response.json(
         { message: "User not found", success: false },

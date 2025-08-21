@@ -3,12 +3,12 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+
 import { AcceptingMessagesToggle } from "@/helpers/acceptingMessagesToggle";
 import CopyButton from "@/helpers/copyButton";
 import { GlobalHeader } from "@/components/global-header";
+import { toast } from "sonner";
 import {
-  ArrowLeft,
   MessageSquare,
   Settings,
   Trash2,
@@ -24,11 +24,17 @@ interface Message {
 }
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Function to handle toggle callback
+  const handleToggleCallback = async (newState: boolean) => {
+    // Force session refresh
+    await update();
+  };
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -75,7 +81,6 @@ export default function DashboardPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: session?.user.username,
           messageId: messageId,
         }),
       });
@@ -87,12 +92,13 @@ export default function DashboardPage() {
         setMessages((prevMessages) =>
           prevMessages.filter((msg) => msg._id !== messageId)
         );
+        toast.success("Message deleted successfully!");
       } else {
-        alert(`Error: ${data.message}`);
+        toast.error(`Error: ${data.message}`);
       }
     } catch (error) {
       console.error("Error deleting message:", error);
-      alert("Failed to delete message. Please try again.");
+      toast.error("Failed to delete message. Please try again.");
     } finally {
       setDeletingId(null);
     }
@@ -130,6 +136,34 @@ export default function DashboardPage() {
       <GlobalHeader />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Debug Section - Remove this later */}
+        <div className="mb-8 p-4 bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-lg">
+          <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
+            Debug Info:
+          </h3>
+          <p className="text-sm text-yellow-700 dark:text-yellow-300">
+            Username: {session?.user?.username} | Verified:{" "}
+            {session?.user?.isVerified ? "Yes" : "No"} | Accepting:{" "}
+            {session?.user?.isAcceptingMessages ? "Yes" : "No"}
+          </p>
+          <button
+            onClick={async () => {
+              try {
+                const response = await fetch("/api/debug/user");
+                const data = await response.json();
+                console.log("User debug data:", data);
+                toast.success("Check console for user data");
+              } catch (error) {
+                console.error("Debug error:", error);
+                toast.error("Debug failed");
+              }
+            }}
+            className="mt-2 px-3 py-1 bg-yellow-600 text-white text-xs rounded cursor-pointer"
+          >
+            Debug User Data
+          </button>
+        </div>
+
         {/* Welcome Section */}
         <div className="mb-12">
           <div className="flex items-center gap-4 mb-6">
@@ -161,7 +195,9 @@ export default function DashboardPage() {
             <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">
               Total Messages
             </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Received feedback</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Received feedback
+            </p>
           </div>
 
           <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 hover:shadow-md transition-shadow duration-200 cursor-pointer">
@@ -175,8 +211,12 @@ export default function DashboardPage() {
                 {session.user.isAcceptingMessages ? "Active" : "Paused"}
               </span>
             </div>
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">Status</h3>
-            <p className="text-sm text-white-600 dark:text-slate-400">Message reception</p>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">
+              Status
+            </h3>
+            <p className="text-sm text-white-600 dark:text-slate-400">
+              Message reception
+            </p>
           </div>
 
           <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 hover:shadow-md transition-shadow duration-200 cursor-pointer">
@@ -184,10 +224,16 @@ export default function DashboardPage() {
               <div className="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-xl">
                 <Shield className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
-              <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">100%</span>
+              <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                100%
+              </span>
             </div>
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">Privacy</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Anonymous feedback</p>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">
+              Privacy
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Anonymous feedback
+            </p>
           </div>
 
           <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 hover:shadow-md transition-shadow duration-200 cursor-pointer">
@@ -195,10 +241,16 @@ export default function DashboardPage() {
               <div className="p-3 bg-orange-100 dark:bg-orange-900/50 rounded-xl">
                 <LinkIcon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
               </div>
-              <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">Secure</span>
+              <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                Secure
+              </span>
             </div>
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">Link Status</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Ready to share</p>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">
+              Link Status
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Ready to share
+            </p>
           </div>
         </div>
 
@@ -216,6 +268,7 @@ export default function DashboardPage() {
           <div className="bg-slate-50/80 dark:bg-slate-700/50 rounded-xl p-6">
             <AcceptingMessagesToggle
               initial={session.user.isAcceptingMessages}
+              onToggle={handleToggleCallback}
             />
           </div>
         </div>
@@ -289,7 +342,9 @@ export default function DashboardPage() {
                         <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                           Anonymous Message
                         </span>
-                        <span className="text-slate-400 dark:text-slate-500">•</span>
+                        <span className="text-slate-400 dark:text-slate-500">
+                          •
+                        </span>
                         <span className="text-sm text-slate-500 dark:text-slate-400">
                           {new Date(msg.createdAt).toLocaleDateString("en-US", {
                             year: "numeric",

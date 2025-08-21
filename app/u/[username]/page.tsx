@@ -20,6 +20,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { messageSchema } from "@/schemas/messageSchema";
 import { ApiResponse } from "@/types/ApiResponse";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   Send,
@@ -31,7 +32,7 @@ import {
 
 export default function SendMessage() {
   const params = useParams<{ username: string }>();
-  const username = params.username;
+  const username = decodeURIComponent(params.username); // Decode URL params to handle case issues
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -54,10 +55,10 @@ export default function SendMessage() {
 
       console.log("Message sent successfully:", response.data);
       form.reset({ content: "" });
-      setIsSuccess(true);
+     
+      toast.success("Message sent successfully! 🎉");
 
-      // Reset success state after 3 seconds
-      setTimeout(() => setIsSuccess(false), 3000);
+      
     } catch (err) {
       const errorMessage =
         (err as AxiosError<ApiResponse>).response?.data.message ||
@@ -65,37 +66,13 @@ export default function SendMessage() {
       console.error("Failed to send message:", errorMessage);
 
       // Show error to user
-      alert(`Error: ${errorMessage}`);
+      toast.error(`Error: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isSuccess) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
-            Message Sent Successfully!
-          </h1>
-          <p className="text-slate-600 dark:text-slate-300 mb-8">
-            Your anonymous feedback has been delivered to{" "}
-            <span className="font-semibold">@{username}</span>
-          </p>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors duration-200 cursor-pointer"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back to Home
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -105,16 +82,7 @@ export default function SendMessage() {
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-2xl">
-          {/* Back to Home Link */}
-          <div className="mb-8">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200 cursor-pointer"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </Link>
-          </div>
+          
 
           {/* Main Card */}
           <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl overflow-hidden">
