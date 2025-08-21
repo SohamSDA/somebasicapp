@@ -31,7 +31,7 @@ export default function DashboardPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Function to handle toggle callback
-  const handleToggleCallback = async (_newState: boolean) => {
+  const handleToggleCallback = async () => {
     // Force session refresh
     await update();
   };

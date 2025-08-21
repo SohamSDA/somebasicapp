@@ -21,12 +21,7 @@ import Link from "next/link";
 import { messageSchema } from "@/schemas/messageSchema";
 import { ApiResponse } from "@/types/ApiResponse";
 import { toast } from "sonner";
-import {
-  Send,
-  MessageSquare,
-  Shield,
-  Users,
-} from "lucide-react";
+import { Send, MessageSquare, Shield, Users } from "lucide-react";
 
 export default function SendMessage() {
   const params = useParams<{ username: string }>();
@@ -52,10 +47,8 @@ export default function SendMessage() {
 
       console.log("Message sent successfully:", response.data);
       form.reset({ content: "" });
-     
-      toast.success("Message sent successfully! 🎉");
 
-      
+      toast.success("Message sent successfully! 🎉");
     } catch (err) {
       const errorMessage =
         (err as AxiosError<ApiResponse>).response?.data.message ||
@@ -69,8 +62,6 @@ export default function SendMessage() {
     }
   };
 
-  
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Background Elements */}
@@ -79,8 +70,6 @@ export default function SendMessage() {
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-2xl">
-          
-
           {/* Main Card */}
           <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl overflow-hidden">
             {/* Header */}
@@ -109,9 +98,9 @@ export default function SendMessage() {
                 </h3>
               </div>
               <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                Your message will be completely anonymous. We don&apos;t store your
-                IP address, browser fingerprint, or any identifying information.
-                The recipient will only see your message content.
+                Your message will be completely anonymous. We don&apos;t store
+                your IP address, browser fingerprint, or any identifying
+                information. The recipient will only see your message content.
               </p>
             </div>
 
